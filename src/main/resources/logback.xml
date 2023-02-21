@@ -1,0 +1,58 @@
+<configuration debug="true">
+	<property name="LOG_ROOT" value="logs"/>
+	<property name="LOG_FILE_NAME" value="rs_chat"/>
+	<property name="LOG_PATTERN" value="%d %p %c [%t] %m%n"/>
+
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<withJansi>true</withJansi>
+		<encoder>
+			<pattern>%d{HH:mm:ss} %magenta([%t]) %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE_ERRORS_AND_WARNINGS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_ROOT}/${LOG_FILE_NAME}-warns.log</file>
+		<filter class="com.example.restspringtemplate.config.logging.ErrorAndWarningFilter"/>
+		<append>true</append>
+		<immediateFlush>true</immediateFlush>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_ROOT}/${LOG_FILE_NAME}-warns-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<!-- Each archived file's size will be max 30MB -->
+			<maxFileSize>30MB</maxFileSize>
+			<!-- 90 days (3 months) to keep -->
+			<maxHistory>90</maxHistory>
+			<!-- Total size of all archive files, if total size > 5GB, it will delete old archived file -->
+			<totalSizeCap>5GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE_NORMAL_LOGS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_ROOT}/${LOG_FILE_NAME}-app.log</file>
+		<filter class="com.example.restspringtemplate.config.logging.NormalFilter"/>
+		<append>true</append>
+		<immediateFlush>true</immediateFlush>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_ROOT}/${LOG_FILE_NAME}-app-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<maxFileSize>30MB</maxFileSize>
+			<maxHistory>90</maxHistory>
+			<totalSizeCap>5GB</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- The log level is decided in each appender -->
+	<logger name="rs.chat" level="debug" additivity="false">
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="FILE_ERRORS_AND_WARNINGS"/>
+		<appender-ref ref="FILE_NORMAL_LOGS"/>
+	</logger>
+
+	<root level="error">
+		<appender-ref ref="CONSOLE"/>
+	</root>
+</configuration>
